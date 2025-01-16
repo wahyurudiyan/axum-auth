@@ -1,0 +1,3 @@
+reorder_imports = true
+brace_style = "PreferSameLine"
+control_brace_style = "AlwaysSameLine"
