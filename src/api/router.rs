@@ -1,5 +1,7 @@
-use super::controller::auth_controller::{claim_token, verify_token};
-use crate::service::{auth_interface::AuthService, paseto_service::PasetoService};
+use super::controller::auth_controller::{
+    claim_local_token, claim_public_token, verify_local_token, verify_public_token,
+};
+use crate::service::auth_interface::AuthService;
 use axum::{routing::post, Extension, Router};
 use std::sync::Arc;
 
@@ -18,8 +20,10 @@ impl Routes {
         Router::new().nest(
             "/auth/token",
             Router::new()
-                .route("/claim", post(claim_token))
-                .route("/verify", post(verify_token))
+                .route("/local/claim", post(claim_local_token))
+                .route("/local/verify", post(verify_local_token))
+                .route("/public/claim", post(claim_public_token))
+                .route("/public/verify", post(verify_public_token))
                 .layer(Extension(self.auth_service.clone())),
         )
     }
