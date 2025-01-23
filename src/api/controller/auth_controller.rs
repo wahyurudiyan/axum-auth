@@ -10,8 +10,8 @@ use crate::{
 use axum::{http::StatusCode, response::IntoResponse, Extension, Json};
 use std::sync::Arc;
 
-pub async fn claim_local_token(
-    Extension(state): Extension<Arc<dyn AuthService>>,
+pub async fn claim_local_token<T:AuthService>(
+    Extension(state): Extension<T>,
     Json(body): Json<PasetoClaimRequest>,
 ) -> impl IntoResponse {
     let user_data = UserData { user: body.user };
@@ -31,8 +31,8 @@ pub async fn claim_local_token(
     }
 }
 
-pub async fn verify_local_token(
-    Extension(state): Extension<Arc<dyn AuthService>>,
+pub async fn verify_local_token<T:AuthService>(
+    Extension(state): Extension<T>,
     Json(body): Json<PasetoVerifyRequest>,
 ) -> impl IntoResponse {
     let token = PasetoToken {
@@ -56,8 +56,8 @@ pub async fn verify_local_token(
     }
 }
 
-pub async fn claim_public_token(
-    Extension(state): Extension<Arc<dyn AuthService>>,
+pub async fn claim_public_token<T:AuthService>(
+    Extension(state): Extension<T>,
     Json(body): Json<PasetoClaimRequest>,
 ) -> impl IntoResponse {
     let user_data = UserData { user: body.user };
@@ -77,8 +77,8 @@ pub async fn claim_public_token(
     }
 }
 
-pub async fn verify_public_token(
-    Extension(state): Extension<Arc<dyn AuthService>>,
+pub async fn verify_public_token<T:AuthService>(
+    Extension(state): Extension<T>,
     Json(body): Json<PasetoVerifyRequest>,
 ) -> impl IntoResponse {
     let token = PasetoToken {

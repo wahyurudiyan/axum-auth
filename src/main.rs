@@ -23,17 +23,17 @@ async fn main() {
     };
 
     // Just for example, not recommend for production
-    let pem = fs::read_to_string("ed25519_key.pem").expect("Unable to read ed25519_key.pem");
+    let cert_path = env::var("CERTIFICATE_PATH").expect("Certificate path cannot empty");
+    let pem = fs::read_to_string(cert_path).expect("Unable to read ed25519_key.pem");
     let local_secret = env::var("PASETO_LOCAL_SECRET").expect("Envar: local secret cannot empty");
     let hmac_secret = env::var("PASETO_HMAC_SECRET").expect("Envar: hmac secret cannot empty");
 
     // Init auth service as dependency for controller that passing over layer
-    let auth_service: Arc<dyn AuthService> =
-        Arc::new(PasetoService::new(pem, local_secret, hmac_secret));
+    let paseto_service = PasetoService::new(pem, local_secret, hmac_secret);
 
     // Init REST Service
     let app_host = format!("0.0.0.0:{app_port}");
-    let routes = Routes::new(auth_service);
+    let routes = Routes::new(paseto_service);
     let app = Router::new().nest("/api", routes.router());
     let listener = tokio::net::TcpListener::bind(app_host.clone())
         .await

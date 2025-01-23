@@ -1,0 +1,22 @@
+services:
+  axum:
+    container_name: axum-auth-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    secrets:
+      - private_key
+    environment:
+      - RUST_LOG=info
+      - APP_PORT=3000
+      - CERTIFICATE_PATH=/run/secrets/private_key
+      - PASETO_LOCAL_SECRET=#S3cretK3Y!ThisK3yMu5tBe32Bytes!
+      - PASETO_HMAC_SECRET=f3f8a71c69bdf338c447029f0ff51887fc7e57c49b77c8b5cab001c986393dcc
+    volumes:
+      - ./axum-auth:/app/data
+
+secrets:
+  private_key:
+    file: ./ed25519_key.pem

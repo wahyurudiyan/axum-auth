@@ -3,16 +3,15 @@ use super::controller::auth_controller::{
 };
 use crate::service::auth_interface::AuthService;
 use axum::{routing::post, Extension, Router};
-use std::sync::Arc;
 
-pub struct Routes {
-    auth_service: Arc<dyn AuthService>,
+pub struct Routes<T: AuthService + Clone> {
+    auth_service: T,
 }
 
-impl Routes {
-    pub fn new(auth_service: Arc<dyn AuthService>) -> Self {
+impl <T: AuthService + Clone> Routes<T> {
+    pub fn new(paseto_service: T) -> Self {
         Routes {
-            auth_service: auth_service,
+            auth_service: paseto_service,
         }
     }
 
@@ -20,10 +19,10 @@ impl Routes {
         Router::new().nest(
             "/auth/token",
             Router::new()
-                .route("/local/claim", post(claim_local_token))
-                .route("/local/verify", post(verify_local_token))
-                .route("/public/claim", post(claim_public_token))
-                .route("/public/verify", post(verify_public_token))
+                .route("/local/claim", post(claim_local_token::<T>))
+                .route("/local/verify", post(verify_local_token::<T>))
+                .route("/public/claim", post(claim_public_token::<T>))
+                .route("/public/verify", post(verify_public_token::<T>))
                 .layer(Extension(self.auth_service.clone())),
         )
     }
